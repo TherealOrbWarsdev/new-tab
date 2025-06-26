@@ -1,0 +1,206 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Body */
+body, html {
+  height: 100%;
+  background: linear-gradient(270deg, #0f2027, #203a43, #2c5364, #0f2027);
+  background-size: 800% 800%;
+  animation: gradientBG 30s ease infinite;
+  color: #a0c4ff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+}
+
+/* Animated gradient background */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Time display */
+#time-display {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  font-family: monospace;
+  color: #a0c4ff;
+  user-select: none;
+  z-index: 20;
+}
+
+/* Weather widget */
+#weather-widget {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  text-align: center;
+  font-family: monospace;
+  color: #a0c4ff;
+  user-select: none;
+  z-index: 20;
+}
+
+#weather-location {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+#weather-temp {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+#weather-desc {
+  font-size: 14px;
+  margin-bottom: 5px;
+  text-transform: capitalize;
+}
+
+#weather-icon {
+  width: 50px;
+  height: 50px;
+  filter: drop-shadow(0 0 3px #a0c4ff);
+}
+
+/* Carousel container */
+#orbit-container {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 100vw;
+  height: 120px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Orbiting shortcuts */
+.orbit-icon {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  border-radius: 12px;
+  background: #1e293b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  pointer-events: auto;
+  position: fixed;
+  top: 50%;
+  transition: all 0.4s ease;
+  filter: brightness(0.6);
+  opacity: 0.5;
+}
+
+.orbit-icon img {
+  width: 36px;
+  height: 36px;
+  filter: invert(0.85);
+  user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Spotify playback mockup */
+#spotify-player {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 320px;
+  box-shadow: 0 0 20px #3b82f6;
+  user-select: none;
+  color: #a0c4ff;
+  font-family: monospace;
+  z-index: 20;
+}
+
+#spotify-album-art {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+}
+
+#spotify-info {
+  flex: 1;
+}
+
+#spotify-track {
+  font-weight: bold;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#spotify-artist {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 5px;
+}
+
+#spotify-controls button {
+  background: transparent;
+  border: none;
+  color: #a0c4ff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+#spotify-controls button:hover {
+  color: #60a5fa;
+}
+
+/* Falling Letters Container */
+#letter-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 50;
+  font-family: monospace;
+  user-select: none;
+  color: #60a5fa;
+  background: transparent;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-end;
+  padding: 10px;
+  gap: 5px;
+}
+
+.letter {
+  position: relative;
+  font-size: 24px;
+  opacity: 0.8;
+  transition: opacity 0.5s ease;
+  user-select: none;
+}
+
+

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Custom New Tab with Falling ISAIAH Letters</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Time display -->
+  <div id="time-display"></div>
+
+  <!-- Weather widget -->
+  <div id="weather-widget">
+    <div id="weather-location"></div>
+    <div id="weather-temp"></div>
+    <div id="weather-desc"></div>
+    <img id="weather-icon" alt="Weather Icon" />
+  </div>
+
+  <!-- Carousel container -->
+  <div id="orbit-container">
+    <div class="orbit-icon" data-link="https://www.google.com" title="Google">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" />
+    </div>
+    <div class="orbit-icon" data-link="https://www.youtube.com" title="YouTube">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube" />
+    </div>
+    <div class="orbit-icon" data-link="https://chat.openai.com" title="ChatGPT">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/openai.svg" alt="ChatGPT" />
+    </div>
+    <div class="orbit-icon" data-link="https://open.spotify.com" title="Spotify">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/spotify.svg" alt="Spotify" />
+    </div>
+    <div class="orbit-icon" data-link="https://www.icloud.com" title="iCloud">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/icloud.svg" alt="iCloud" />
+    </div>
+    <div class="orbit-icon" data-link="https://mail.google.com" title="Gmail">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" alt="Gmail" />
+    </div>
+    <div class="orbit-icon" data-link="https://calendar.google.com" title="Calendar">
+      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlecalendar.svg" alt="Calendar" />
+    </div>
+  </div>
+
+  <!-- Spotify playback mockup -->
+  <div id="spotify-player">
+    <img id="spotify-album-art" src="https://i.scdn.co/image/ab67616d00004851c8c1a1ec83e8cd3e4c4d5a52" alt="Album Art" />
+    <div id="spotify-info">
+      <div id="spotify-track">Song Title</div>
+      <div id="spotify-artist">Artist Name</div>
+    </div>
+    <div id="spotify-controls">
+      <button id="spotify-prev">⏮️</button>
+      <button id="spotify-play">▶️</button>
+      <button id="spotify-next">⏭️</button>
+    </div>
+  </div>
+
+  <!-- Falling Letters Container -->
+  <div id="letter-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
