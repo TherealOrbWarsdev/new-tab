@@ -108,8 +108,8 @@ function fetchWeather(city = 'Virginia') {
 fetchWeather();
 
 // --- Spotify Integration ---
-const clientId = '9200468bcb7c400395388aec925fad9e'; // Your Spotify Client ID
-const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/'; // Your GitHub Pages URL
+const clientId = '9200468bcb7c400395388aec925fad9e'; // Spotify Client ID
+const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/'; // GitHub Page URL
 const scopes = 'user-read-currently-playing user-read-playback-state';
 
 // Parse access token from URL hash after redirect
