@@ -43,41 +43,6 @@ body, html {
   z-index: 20;
 }
 
-/* Weather widget */
-#weather-widget {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  text-align: center;
-  font-family: monospace;
-  color: #a0c4ff;
-  user-select: none;
-  z-index: 20;
-}
-
-#weather-location {
-  font-weight: bold;
-  font-size: 18px;
-  margin-bottom: 5px;
-}
-
-#weather-temp {
-  font-size: 16px;
-  margin-bottom: 5px;
-}
-
-#weather-desc {
-  font-size: 14px;
-  margin-bottom: 5px;
-  text-transform: capitalize;
-}
-
-#weather-icon {
-  width: 50px;
-  height: 50px;
-  filter: drop-shadow(0 0 3px #a0c4ff);
-}
-
 /* Carousel container */
 #orbit-container {
   position: fixed;
