@@ -107,6 +107,71 @@ function fetchWeather(city = 'Virginia') {
 }
 fetchWeather();
 
+const clientId = '9200468bcb7c400395388aec925fad9e'; // Your Spotify Client ID
+const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/'; // Your GitHub Pages URL
+const scopes = 'user-read-currently-playing user-read-playback-state';
+
+// Parse access token from URL hash after redirect
+function getTokenFromUrl() {
+  return window.location.hash
+    .substring(1)
+    .split('&')
+    .reduce((initial, item) => {
+      let parts = item.split('=');
+      initial[parts[0]] = decodeURIComponent(parts[1]);
+      return initial;
+    }, {});
+}
+
+let accessToken = null;
+
+// If redirected from Spotify auth, get token and remove hash from URL
+window.onload = () => {
+  const hash = getTokenFromUrl();
+  if (hash.access_token) {
+    accessToken = hash.access_token;
+    window.history.pushState("", document.title, window.location.pathname + window.location.search);
+    fetchCurrentTrack();
+  }
+};
+
+document.getElementById('connect-spotify').addEventListener('click', () => {
+  const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
+  window.location = authUrl;
+});
+
+function fetchCurrentTrack() {
+  if (!accessToken) return;
+
+  fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    }
+  })
+  .then(response => {
+    if (response.status === 204 || response.status > 400) {
+      document.getElementById('spotify-info').innerText = "No song currently playing.";
+      return null;
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (!data) return;
+    const track = data.item;
+    const artists = track.artists.map(artist => artist.name).join(', ');
+    const albumArt = track.album.images[0].url;
+
+    document.getElementById('spotify-info').innerHTML = `
+      <img src="${albumArt}" width="100" height="100" style="border-radius:8px;"><br>
+      <strong>${track.name}</strong><br>
+      <em>${artists}</em>
+    `;
+  })
+  .catch(() => {
+    document.getElementById('spotify-info').innerText = "Failed to fetch Spotify data.";
+  });
+}
+
 // --- Spotify Now Playing (Read-only) ---
 const spotifyTrack = document.getElementById('spotify-track');
 const spotifyArtist = document.getElementById('spotify-artist');
