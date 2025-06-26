@@ -53,7 +53,7 @@ window.addEventListener('load', () => {
     });
   });
 
-  // Auto scroll every 1.5 seconds
+  // Auto scroll
   setInterval(() => {
     selectedIndex = (selectedIndex + 1) % total;
     updateCarousel();
@@ -78,43 +78,11 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
-// --- Weather Widget for Virginia ---
-const apiKey = '71e521476e0a8531ebb37455ed369598';
-const weatherLocationEl = document.getElementById('weather-location');
-const weatherTempEl = document.getElementById('weather-temp');
-const weatherDescEl = document.getElementById('weather-desc');
-const weatherIconEl = document.getElementById('weather-icon');
-
-function fetchWeather(city = 'Virginia') {
-  fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`)
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      return res.json();
-    })
-    .then(data => {
-      weatherLocationEl.textContent = data.name;
-      weatherTempEl.textContent = `${Math.round(data.main.temp)}°F`;
-      weatherDescEl.textContent = data.weather[0].description;
-      weatherIconEl.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-    })
-    .catch(e => {
-      weatherLocationEl.textContent = 'Error loading weather';
-      weatherTempEl.textContent = '';
-      weatherDescEl.textContent = '';
-      weatherIconEl.src = '';
-      console.error('Weather fetch error:', e);
-    });
-}
-fetchWeather();
-
 // --- Spotify Integration ---
-const clientId = '9200468bcb7c400395388aec925fad9e'; // Spotify Client ID
-const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/'; // Your GitHub Pages URL
+const clientId = '9200468bcb7c400395388aec925fad9e';
+const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/';
 const scopes = 'user-read-currently-playing user-read-playback-state';
 
-let accessToken = null;
-
-// Parse access token from URL hash after redirect
 function getTokenFromUrl() {
   return window.location.hash
     .substring(1)
@@ -126,15 +94,14 @@ function getTokenFromUrl() {
     }, {});
 }
 
-// On load: parse token & fetch current track if logged in
+let accessToken = null;
+
 window.addEventListener('load', () => {
   const hash = getTokenFromUrl();
   if (hash.access_token) {
     accessToken = hash.access_token;
-    // Clean the URL so token isn't visible
     window.history.pushState("", document.title, window.location.pathname + window.location.search);
     fetchCurrentTrack();
-    // Update every 5 seconds
     setInterval(fetchCurrentTrack, 5000);
   }
 });
