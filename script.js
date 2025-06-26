@@ -107,6 +107,7 @@ function fetchWeather(city = 'Virginia') {
 }
 fetchWeather();
 
+// --- Spotify Integration ---
 const clientId = '9200468bcb7c400395388aec925fad9e'; // Your Spotify Client ID
 const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/'; // Your GitHub Pages URL
 const scopes = 'user-read-currently-playing user-read-playback-state';
@@ -125,15 +126,18 @@ function getTokenFromUrl() {
 
 let accessToken = null;
 
-// If redirected from Spotify auth, get token and remove hash from URL
-window.onload = () => {
+// On load: parse token & fetch current track if logged in
+window.addEventListener('load', () => {
   const hash = getTokenFromUrl();
   if (hash.access_token) {
     accessToken = hash.access_token;
+    // Clean the URL so token isn't visible
     window.history.pushState("", document.title, window.location.pathname + window.location.search);
     fetchCurrentTrack();
+    // Update every 5 seconds
+    setInterval(fetchCurrentTrack, 5000);
   }
-};
+});
 
 document.getElementById('connect-spotify').addEventListener('click', () => {
   const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
@@ -171,65 +175,3 @@ function fetchCurrentTrack() {
     document.getElementById('spotify-info').innerText = "Failed to fetch Spotify data.";
   });
 }
-
-// --- Spotify Now Playing (Read-only) ---
-const spotifyTrack = document.getElementById('spotify-track');
-const spotifyArtist = document.getElementById('spotify-artist');
-const spotifyArt = document.getElementById('spotify-album-art');
-
-const clientId = '9200468bcb7c400395388aec925fad9e';
-const redirectUri = 'https://localhost:5500'; // or your real domain
-const scopes = 'user-read-currently-playing user-read-playback-state';
-
-function getAccessTokenFromUrl() {
-  const hash = window.location.hash;
-  if (!hash) return null;
-  const params = new URLSearchParams(hash.substring(1));
-  return params.get('access_token');
-}
-
-function redirectToSpotifyAuth() {
-  const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
-  window.location.href = authUrl;
-}
-
-function fetchNowPlaying(accessToken) {
-  fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-    .then(res => {
-      if (res.status === 204) return null; // no content
-      if (!res.ok) throw new Error('Spotify API error');
-      return res.json();
-    })
-    .then(data => {
-      if (!data || !data.item) {
-        spotifyTrack.textContent = 'Not playing';
-        spotifyArtist.textContent = '';
-        spotifyArt.src = 'https://i.scdn.co/image/ab67616d00004851c8c1a1ec83e8cd3e4c4d5a52';
-        return;
-      }
-
-      spotifyTrack.textContent = data.item.name;
-      spotifyArtist.textContent = data.item.artists.map(a => a.name).join(', ');
-      spotifyArt.src = data.item.album.images[0].url;
-    })
-    .catch(err => {
-      console.error('Error fetching Spotify now playing:', err);
-      spotifyTrack.textContent = 'Login to Spotify';
-    });
-}
-
-// On load, check for access token
-window.addEventListener('load', () => {
-  const token = getAccessTokenFromUrl();
-  if (token) {
-    window.history.replaceState({}, document.title, '/'); // Clean URL
-    setInterval(() => fetchNowPlaying(token), 5000); // update every 5s
-  } else {
-    document.getElementById('spotify-track').textContent = 'Click to connect';
-    document.getElementById('spotify-player').addEventListener('click', redirectToSpotifyAuth);
-  }
-});
