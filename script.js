@@ -53,7 +53,7 @@ window.addEventListener('load', () => {
     });
   });
 
-  // Auto scroll
+  // Auto scroll every 1.5 seconds
   setInterval(() => {
     selectedIndex = (selectedIndex + 1) % total;
     updateCarousel();
@@ -109,8 +109,10 @@ fetchWeather();
 
 // --- Spotify Integration ---
 const clientId = '9200468bcb7c400395388aec925fad9e'; // Spotify Client ID
-const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/'; // GitHub Page URL
+const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/'; // Your GitHub Pages URL
 const scopes = 'user-read-currently-playing user-read-playback-state';
+
+let accessToken = null;
 
 // Parse access token from URL hash after redirect
 function getTokenFromUrl() {
@@ -123,8 +125,6 @@ function getTokenFromUrl() {
       return initial;
     }, {});
 }
-
-let accessToken = null;
 
 // On load: parse token & fetch current track if logged in
 window.addEventListener('load', () => {
@@ -154,7 +154,7 @@ function fetchCurrentTrack() {
   })
   .then(response => {
     if (response.status === 204 || response.status > 400) {
-      document.getElementById('spotify-info').innerText = "No song currently playing.";
+      document.getElementById('spotify-info').innerText = "Nothing is playing.";
       return null;
     }
     return response.json();
