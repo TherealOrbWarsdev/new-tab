@@ -53,7 +53,6 @@ window.addEventListener('load', () => {
     });
   });
 
-  // Auto scroll
   setInterval(() => {
     selectedIndex = (selectedIndex + 1) % total;
     updateCarousel();
@@ -78,67 +77,108 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
-// --- Spotify Integration ---
+// --- Spotify PKCE Flow ---
 const clientId = '9200468bcb7c400395388aec925fad9e';
 const redirectUri = 'https://therealorbwarsdev.github.io/new-tab/';
 const scopes = 'user-read-currently-playing user-read-playback-state';
 
-function getTokenFromUrl() {
-  return window.location.hash
-    .substring(1)
-    .split('&')
-    .reduce((initial, item) => {
-      let parts = item.split('=');
-      initial[parts[0]] = decodeURIComponent(parts[1]);
-      return initial;
-    }, {});
+function generateRandomString(length) {
+  let text = '';
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
 }
 
-let accessToken = null;
+async function generateCodeChallenge(codeVerifier) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(codeVerifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+const codeVerifier = generateRandomString(128);
+
+(async () => {
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  localStorage.setItem('spotify_code_verifier', codeVerifier);
+
+  document.getElementById('connect-spotify').addEventListener('click', () => {
+    const authUrl = `https://accounts.spotify.com/authorize?` +
+      `client_id=${clientId}` +
+      `&response_type=code` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&code_challenge_method=S256` +
+      `&code_challenge=${codeChallenge}` +
+      `&scope=${encodeURIComponent(scopes)}`;
+
+    window.location = authUrl;
+  });
+})();
 
 window.addEventListener('load', () => {
-  const hash = getTokenFromUrl();
-  if (hash.access_token) {
-    accessToken = hash.access_token;
-    window.history.pushState("", document.title, window.location.pathname + window.location.search);
-    fetchCurrentTrack();
-    setInterval(fetchCurrentTrack, 5000);
-  }
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  if (!code) return;
+
+  const storedVerifier = localStorage.getItem('spotify_code_verifier');
+  if (!storedVerifier) return;
+
+  fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams({
+      client_id: clientId,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+      code_verifier: storedVerifier
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      const accessToken = data.access_token;
+      if (accessToken) fetchCurrentTrack(accessToken);
+    })
+    .catch(err => {
+      console.error('Token exchange failed', err);
+    });
 });
 
-document.getElementById('connect-spotify').addEventListener('click', () => {
-  const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
-  window.location = authUrl;
-});
-
-function fetchCurrentTrack() {
-  if (!accessToken) return;
-
+function fetchCurrentTrack(token) {
   fetch('https://api.spotify.com/v1/me/player/currently-playing', {
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${token}`
     }
   })
-  .then(response => {
-    if (response.status === 204 || response.status > 400) {
-      document.getElementById('spotify-info').innerText = "Nothing is playing.";
-      return null;
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (!data) return;
-    const track = data.item;
-    const artists = track.artists.map(artist => artist.name).join(', ');
-    const albumArt = track.album.images[0].url;
+    .then(res => {
+      if (res.status === 204) return null;
+      if (!res.ok) throw new Error('Spotify API error');
+      return res.json();
+    })
+    .then(data => {
+      if (!data || !data.item) {
+        document.getElementById('spotify-info').textContent = 'Nothing is playing.';
+        return;
+      }
 
-    document.getElementById('spotify-info').innerHTML = `
-      <img src="${albumArt}" width="100" height="100" style="border-radius:8px;"><br>
-      <strong>${track.name}</strong><br>
-      <em>${artists}</em>
-    `;
-  })
-  .catch(() => {
-    document.getElementById('spotify-info').innerText = "Failed to fetch Spotify data.";
-  });
+      const track = data.item;
+      const artists = track.artists.map(a => a.name).join(', ');
+      const albumArt = track.album.images[0].url;
+
+      document.getElementById('spotify-info').innerHTML = `
+        <img src="${albumArt}" width="100" height="100" style="border-radius:8px;"><br>
+        <strong>${track.name}</strong><br>
+        <em>${artists}</em>
+      `;
+    })
+    .catch(() => {
+      document.getElementById('spotify-info').textContent = 'Failed to fetch Spotify data.';
+    });
 }
