@@ -128,7 +128,7 @@ window.addEventListener('load', () => {
   const storedVerifier = localStorage.getItem('spotify_code_verifier');
   if (!storedVerifier) return;
 
-  fetch('https://accounts.spotify.com/api/token', {
+  fetch('https://broad-chlorinated-parmesan.glitch.me', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
